@@ -1,0 +1,29 @@
+{
+  "name": "@zbm1/nodegit",
+  "version": "0.1.0",
+  "description": "nodejs git command",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zbm2001/nodegit.git"
+  },
+  "keywords": [
+    "node",
+    "nodejs",
+    "git",
+    "command"
+  ],
+  "author": "zbm2001@aliyun.com",
+  "license": "Apache License 2.0",
+  "bugs": {
+    "url": "https://github.com/zbm2001/nodegit/issues"
+  },
+  "homepage": "https://github.com/zbm2001/nodegit#readme",
+  "dependencies": {
+    "@zbm1/version-compare": "^0.1.2",
+    "shelljs": "^0.8.3"
+  }
+}
