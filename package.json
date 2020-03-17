@@ -1,6 +1,6 @@
 {
   "name": "@zbm1/nodegit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "nodejs git command",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,6 @@
   },
   "homepage": "https://github.com/zbm2001/nodegit#readme",
   "dependencies": {
-    "@zbm1/version-compare": "^0.1.2",
     "shelljs": "^0.8.3"
   }
 }

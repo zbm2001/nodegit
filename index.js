@@ -1,6 +1,5 @@
 const {execSync} = require('child_process')
 require('shelljs/global')
-const versionCompare = require('@zbm1/version-compare')
 
 /**
  * 封装 exec 返回的结果，加入原命令字符串属性
@@ -22,9 +21,11 @@ const cmds = {
   status: 'git status',
   branch: 'git branch',
   branchAll: 'git branch -a',
-  currentBranch: 'git rev-parse --abbrev-ref HEAD',
+  currentBranch: 'git rev-parse --abbrev-ref HEAD', // git branch | awk '$1 == "*" {print $2}'
   currentId: 'git rev-parse HEAD',
-  describeTag: 'git describe --tags --abbrev=0', // git describe --tags
+  lastTag: 'git describe --tags `git rev-list --tags --max-count=1`',
+  currentTag: 'git describe --tags --abbrev=0', // 获取当前分支基于的 tag 分支名
+  describeTag: 'git describe --tags', // 获取当前分支基于的 tag 分支描述
   checkout: 'git checkout ',
   trackRemote: 'git branch --track ',
   revert: 'git revert',
@@ -52,8 +53,6 @@ const cmds = {
  * @returns {String}
  */
 function currentId () {
-  // let gitOrigHeadPathname = path.resolve('.git/ORIG_HEAD')
-  // let currentId = fs.readFileSync(gitOrigHeadPathname, 'utf8').trim()
   let currentId = execSync(cmds.currentId, {encoding: 'utf8'}).trim()
   return currentId
 }
@@ -63,16 +62,23 @@ function currentId () {
  * @returns {String}
  */
 function current () {
-  // let gitHEADPathname = path.resolve('.git/HEAD')
-  // let gitText = fs.readFileSync(gitHEADPathname, 'utf8').trim()
-  // let currentBranch = /([^/\s\\]+)$/.exec(gitText)[1]
   let currentBranch = execSync(cmds.currentBranch, {encoding: 'utf8'}).trim()
-  // currentBranch === 'HEAD' 表明当前在 tag 分支上
   return currentBranch
 }
 
 /**
- * 获取最近的 tag 分支名。
+ * 获取当前分支基于的 tag 分支名。
+ * 若最近的 tag 有多个无差异分支，返回最早版本，比如：
+ * 1.1.0、1.1.1、1.1.2 为先后创建的多个无差异的 tag 分支，则会返回 1.1.0
+ * @returns {String}
+ */
+function currentTag () {
+  let currentTag = execSync(cmds.currentTag, {encoding: 'utf8'}).trim()
+  return currentTag
+}
+
+/**
+ * 获取当前分支基于的 tag 分支描述。
  * 若最近的 tag 有多个无差异分支，返回最早版本，比如：
  * 1.1.0、1.1.1、1.1.2 为先后创建的多个无差异的 tag 分支，则会返回 1.1.0
  * @returns {String}
@@ -83,19 +89,12 @@ function describeTag () {
 }
 
 /**
- * 获取当前tags最高版本的分支名
+ * 获取当前tags最新版本的分支名
  * @returns {String}
  */
 function lastTag () {
-  // let gitHEADPathname = path.resolve('.git/HEAD')
-  // let gitText = fs.readFileSync(gitHEADPathname, 'utf8').trim()
-  // let currentBranch = /([^/\s\\]+)$/.exec(gitText)[1]
-  let tags = execSync(cmds.tag, {encoding: 'utf8'}).trim().split(/\s+/)
-  if (tags.length < 1) {
-    throw new Error('no tag version!')
-  }
-  tags.sort(versionCompare.descend)
-  return tags[0]
+  let lastTag = execSync(cmds.lastTag, {encoding: 'utf8'}).trim()
+  return lastTag
 }
 
 /**
@@ -338,6 +337,7 @@ module.exports = {
   cmds,
   current,
   currentId,
+  currentTag,
   describeTag,
   exec2,
   lastTag,
